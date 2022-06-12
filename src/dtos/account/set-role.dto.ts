@@ -1,10 +1,10 @@
 import { IsEmail, IsEnum } from 'class-validator';
-import { UserRole, userRoles } from '../../types/user';
+import { AccountRole, accountRoles } from '../../types/account';
 
 export class SetRoleDto {
   @IsEmail()
   email: string;
 
-  @IsEnum(userRoles)
-  role: UserRole;
+  @IsEnum(accountRoles)
+  role: AccountRole;
 }

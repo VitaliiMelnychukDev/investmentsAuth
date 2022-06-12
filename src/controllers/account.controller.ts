@@ -10,8 +10,8 @@ import { ActivateDto } from '../dtos/account/activate.dto';
 import { IResponse, IResponseNoData } from '../types/general';
 import { Service } from 'typedi';
 import { AccountService } from '../services/account.service';
-import { UserMessage } from '../types/message';
-import { IUser, UserRole } from '../types/user';
+import { AccountMessage } from '../types/message';
+import { IAccount, AccountRole } from '../types/account';
 import { SetRoleDto } from '../dtos/account/set-role.dto';
 import { SearchDto } from '../dtos/account/search.dto';
 
@@ -21,44 +21,46 @@ export class AccountController {
   constructor(private accountService: AccountService) {}
 
   @Get('/search')
-  @Authorized(UserRole.Admin)
-  async getUsers(
+  @Authorized(AccountRole.Admin)
+  async getAccounts(
     @QueryParams() searchParams: SearchDto
-  ): Promise<IResponse<IUser[]>> {
-    const users: IUser[] = await this.accountService.getUsers(searchParams);
+  ): Promise<IResponse<IAccount[]>> {
+    const accounts: IAccount[] = await this.accountService.getAccounts(
+      searchParams
+    );
 
     return {
-      data: users,
+      data: accounts,
     };
   }
 
   @Patch('/activate')
-  @Authorized(UserRole.Admin)
-  async activateUser(
-    @Body({ required: true }) activateUserBody: ActivateDto
+  @Authorized(AccountRole.Admin)
+  async activateAccount(
+    @Body({ required: true }) activateAccountBody: ActivateDto
   ): Promise<IResponseNoData> {
-    await this.accountService.updateUser(activateUserBody.email, {
+    await this.accountService.updateAccount(activateAccountBody.email, {
       activated: true,
     });
 
     return {
       success: true,
-      message: UserMessage.UserSuccessfullyActivated,
+      message: AccountMessage.AccountSuccessfullyActivated,
     };
   }
 
   @Patch('/set-role')
-  @Authorized(UserRole.Admin)
-  async setUserRole(
+  @Authorized(AccountRole.Admin)
+  async setAccountRole(
     @Body({ required: true }) setRoleBody: SetRoleDto
   ): Promise<IResponseNoData> {
-    await this.accountService.updateUser(setRoleBody.email, {
+    await this.accountService.updateAccount(setRoleBody.email, {
       role: setRoleBody.role,
     });
 
     return {
       success: true,
-      message: UserMessage.UserRoleSuccessfullyChanged,
+      message: AccountMessage.AccountRoleSuccessfullyChanged,
     };
   }
 }

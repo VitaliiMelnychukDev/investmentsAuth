@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { defaultRole, UserRole, userRoles } from '../types/user';
+import { defaultRole, AccountRole, accountRoles } from '../types/account';
 import { Token } from './Token';
 
 @Entity()
-export class User {
+export class Account {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,14 +22,14 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: userRoles,
+    enum: accountRoles,
     default: defaultRole,
   })
-  role: UserRole;
+  role: AccountRole;
 
   @Column({ type: 'boolean', default: false })
   activated: boolean;
 
-  @OneToMany(() => Token, (token) => token.user)
+  @OneToMany(() => Token, (token) => token.account)
   tokens: Token[];
 }

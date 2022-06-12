@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
-import { UserRole, userRoles } from '../types/user';
-import { User } from '../entity/User';
+import { AccountRole, accountRoles } from '../types/account';
+import { Account } from '../entity/Account';
 import { HashService } from '../services/hash.service';
 
-export class User1653845421620 implements MigrationInterface {
-  public static tableName = 'user';
-  public static emailIndex = `index_${User1653845421620.tableName}_email`;
-  public static roleIndex = `index_${User1653845421620.tableName}_role`;
+export class Account1653845421620 implements MigrationInterface {
+  public static tableName = 'account';
+  public static emailIndex = `index_${Account1653845421620.tableName}_email`;
+  public static roleIndex = `index_${Account1653845421620.tableName}_role`;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const emailColumn = 'email';
@@ -14,7 +14,7 @@ export class User1653845421620 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: User1653845421620.tableName,
+        name: Account1653845421620.tableName,
         columns: [
           {
             name: 'id',
@@ -42,7 +42,7 @@ export class User1653845421620 implements MigrationInterface {
           {
             name: roleColumn,
             type: 'enum',
-            enum: userRoles,
+            enum: accountRoles,
           },
           {
             name: 'activated',
@@ -54,40 +54,40 @@ export class User1653845421620 implements MigrationInterface {
     );
 
     const emailIndex = new TableIndex({
-      name: User1653845421620.emailIndex,
+      name: Account1653845421620.emailIndex,
       columnNames: [emailColumn],
     });
 
-    await queryRunner.createIndex(User1653845421620.tableName, emailIndex);
+    await queryRunner.createIndex(Account1653845421620.tableName, emailIndex);
 
     const roleIndex = new TableIndex({
-      name: User1653845421620.roleIndex,
+      name: Account1653845421620.roleIndex,
       columnNames: [roleColumn],
     });
 
-    await queryRunner.createIndex(User1653845421620.tableName, roleIndex);
+    await queryRunner.createIndex(Account1653845421620.tableName, roleIndex);
 
     const hashService = new HashService();
-    const userRepository = queryRunner.manager.getRepository(User);
-    const defaultAdmin = new User();
+    const accountRepository = queryRunner.manager.getRepository(Account);
+    const defaultAdmin = new Account();
     defaultAdmin.email = 'defaultadmin_user@investments.com';
     defaultAdmin.name = 'Admin Admin';
     defaultAdmin.password = await hashService.hashString('test1234');
-    defaultAdmin.role = UserRole.Admin;
+    defaultAdmin.role = AccountRole.Admin;
     defaultAdmin.activated = true;
 
-    await userRepository.save(defaultAdmin);
+    await accountRepository.save(defaultAdmin);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropIndex(
-      User1653845421620.tableName,
-      User1653845421620.roleIndex
+      Account1653845421620.tableName,
+      Account1653845421620.roleIndex
     );
     await queryRunner.dropIndex(
-      User1653845421620.tableName,
-      User1653845421620.emailIndex
+      Account1653845421620.tableName,
+      Account1653845421620.emailIndex
     );
-    await queryRunner.dropTable(User1653845421620.tableName);
+    await queryRunner.dropTable(Account1653845421620.tableName);
   }
 }

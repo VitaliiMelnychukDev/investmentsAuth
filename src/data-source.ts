@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { join } from 'path';
-import { User } from './entity/User';
+import { Account } from './entity/Account';
 import { Token } from './entity/Token';
 
 const AppDataSource = new DataSource({
@@ -10,7 +10,7 @@ const AppDataSource = new DataSource({
   username: 'admin',
   password: 'test1234',
   database: 'auth',
-  entities: [User, Token],
+  entities: [Account, Token],
   migrations: [join(__dirname, '/migration/*.{ts,js}')],
 });
 

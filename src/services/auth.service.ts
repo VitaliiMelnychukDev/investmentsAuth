@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { User } from '../entity/User';
+import { Account } from '../entity/Account';
 import { HashService } from './hash.service';
 import AppDataSource from '../data-source';
 import { BadRequestError, UnauthorizedError } from 'routing-controllers';
@@ -17,32 +17,32 @@ export class AuthService {
   ) {}
 
   async login(loginData: LoginDto): Promise<ITokens> {
-    const userRepository = AppDataSource.getRepository(User);
-    let user: User | null = null;
+    const accountRepository = AppDataSource.getRepository(Account);
+    let account: Account | null = null;
 
     try {
-      user = await userRepository.findOneBy({ email: loginData.email });
+      account = await accountRepository.findOneBy({ email: loginData.email });
     } catch {
-      throw new UnauthorizedError(AuthError.LoginUserFail);
+      throw new UnauthorizedError(AuthError.LoginAccountFail);
     }
 
-    if (!user || !user.activated) {
-      throw new UnauthorizedError(AuthError.LoginUserFail);
+    if (!account || !account.activated) {
+      throw new UnauthorizedError(AuthError.LoginAccountFail);
     }
 
     const passwordIsValid: boolean = await this.hashService.isMatch(
       loginData.password,
-      user.password
+      account.password
     );
 
     if (!passwordIsValid) {
-      throw new UnauthorizedError(AuthError.LoginUserFail);
+      throw new UnauthorizedError(AuthError.LoginAccountFail);
     }
 
     try {
-      return await this.generateTokens(user);
+      return await this.generateTokens(account);
     } catch (e) {
-      throw new UnauthorizedError(AuthError.LoginUserFail);
+      throw new UnauthorizedError(AuthError.LoginAccountFail);
     }
   }
 
@@ -58,37 +58,37 @@ export class AuthService {
 
     await this.deleteToken(refreshToken, AuthError.RefreshTokenFail);
 
-    return this.generateTokens(token.user);
+    return this.generateTokens(token.account);
   }
 
-  async logout(refreshToken: string, user: ITokenPayload): Promise<void> {
+  async logout(refreshToken: string, account: ITokenPayload): Promise<void> {
     const token: Token = await this.getRefreshToken(
       refreshToken,
       AuthError.RefreshTokenFail
     );
 
-    if (token.user.id !== user.userId) {
+    if (token.account.id !== account.accountId) {
       throw new BadRequestError(AuthError.LogoutFail);
     }
 
     await this.deleteToken(refreshToken, AuthError.LogoutFail);
   }
 
-  private async generateTokens(user: User): Promise<ITokens> {
+  private async generateTokens(account: Account): Promise<ITokens> {
     const tokenRepository = AppDataSource.getRepository(Token);
 
     const newToken = new Token();
-    newToken.userId = user.id;
+    newToken.accountId = account.id;
     newToken.refreshToken = this.tokenService.generateRefreshToken();
     newToken.expireAt = this.tokenService.getRefreshTokenExpiration();
 
     await tokenRepository.save(newToken);
 
     const accessToken = this.tokenService.generateAccessToken({
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
+      accountId: account.id,
+      email: account.email,
+      name: account.name,
+      role: account.role,
     });
 
     return {
@@ -110,14 +110,14 @@ export class AuthService {
           refreshToken,
         },
         relations: {
-          user: true,
+          account: true,
         },
       });
     } catch {
       throw new BadRequestError(errorMessage);
     }
 
-    if (!token || !token.user?.activated) {
+    if (!token || !token.account?.activated) {
       throw new BadRequestError(errorMessage);
     }
 

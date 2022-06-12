@@ -5,16 +5,16 @@ import {
   TableForeignKey,
   TableIndex,
 } from 'typeorm';
-import { User1653845421620 } from './1653845421620-User';
+import { Account1653845421620 } from './1653845421620-Account';
 
 export class Token1654024861970 implements MigrationInterface {
   public static tableName = 'token';
-  public static userIdIndex = `index_${Token1654024861970.tableName}_userId`;
+  public static accountIdIndex = `index_${Token1654024861970.tableName}_accountId`;
   public static tokenIndex = `index_${Token1654024861970.tableName}_token`;
-  public static userIdForeignKey = `foreign_key_${Token1654024861970.tableName}_userId`;
+  public static accountIdForeignKey = `foreign_key_${Token1654024861970.tableName}_accountId`;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const userIdColumn = 'userId';
+    const accountIdColumn = 'accountId';
     const tokenColumn = 'refreshToken';
 
     await queryRunner.createTable(
@@ -29,7 +29,7 @@ export class Token1654024861970 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: userIdColumn,
+            name: accountIdColumn,
             type: 'int',
           },
           {
@@ -46,12 +46,12 @@ export class Token1654024861970 implements MigrationInterface {
       })
     );
 
-    const userIdIndex = new TableIndex({
-      name: Token1654024861970.userIdIndex,
-      columnNames: [userIdColumn],
+    const accountIdIndex = new TableIndex({
+      name: Token1654024861970.accountIdIndex,
+      columnNames: [accountIdColumn],
     });
 
-    await queryRunner.createIndex(Token1654024861970.tableName, userIdIndex);
+    await queryRunner.createIndex(Token1654024861970.tableName, accountIdIndex);
 
     const tokenIndex = new TableIndex({
       name: Token1654024861970.tokenIndex,
@@ -60,24 +60,24 @@ export class Token1654024861970 implements MigrationInterface {
 
     await queryRunner.createIndex(Token1654024861970.tableName, tokenIndex);
 
-    const userIdForeignKey = new TableForeignKey({
-      name: Token1654024861970.userIdForeignKey,
-      columnNames: [userIdColumn],
+    const accountIdForeignKey = new TableForeignKey({
+      name: Token1654024861970.accountIdForeignKey,
+      columnNames: [accountIdColumn],
       referencedColumnNames: ['id'],
-      referencedTableName: User1653845421620.tableName,
+      referencedTableName: Account1653845421620.tableName,
       onDelete: 'CASCADE',
     });
 
     await queryRunner.createForeignKey(
       Token1654024861970.tableName,
-      userIdForeignKey
+      accountIdForeignKey
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey(
       Token1654024861970.tableName,
-      Token1654024861970.userIdForeignKey
+      Token1654024861970.accountIdForeignKey
     );
     await queryRunner.dropIndex(
       Token1654024861970.tableName,
@@ -85,7 +85,7 @@ export class Token1654024861970 implements MigrationInterface {
     );
     await queryRunner.dropIndex(
       Token1654024861970.tableName,
-      Token1654024861970.userIdIndex
+      Token1654024861970.accountIdIndex
     );
     await queryRunner.dropTable(Token1654024861970.tableName);
   }

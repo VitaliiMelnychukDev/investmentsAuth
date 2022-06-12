@@ -1,4 +1,4 @@
-import { UserRole } from './user';
+import { AccountRole } from './account';
 
 export type ITokens = {
   accessToken: string;
@@ -6,8 +6,8 @@ export type ITokens = {
 };
 
 export type ITokenPayload = {
-  userId: number;
+  accountId: number;
   email: string;
-  role: UserRole;
+  role: AccountRole;
   name: string;
 };

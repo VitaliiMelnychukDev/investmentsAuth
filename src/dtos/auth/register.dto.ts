@@ -1,7 +1,11 @@
-import { UserRole } from '../../types/user';
+import { AccountRole } from '../../types/account';
 import { IsEmail, IsIn, IsOptional, Length } from 'class-validator';
 
-const allowedRegisterRoles = [UserRole.User, UserRole.Company, UserRole.Bank];
+const allowedRegisterRoles = [
+  AccountRole.User,
+  AccountRole.Company,
+  AccountRole.Bank,
+];
 
 export class RegisterDto {
   @IsEmail()
@@ -15,5 +19,5 @@ export class RegisterDto {
 
   @IsOptional()
   @IsIn(allowedRegisterRoles)
-  role: UserRole;
+  role: AccountRole;
 }

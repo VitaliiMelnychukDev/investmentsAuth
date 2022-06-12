@@ -1,11 +1,11 @@
 import { Service } from 'typedi';
 import { RegisterDto } from '../dtos/auth/register.dto';
-import { User } from '../entity/User';
-import { IUpdateUser, IUser, UserRole } from '../types/user';
+import { Account } from '../entity/Account';
+import { IUpdateAccount, IAccount, AccountRole } from '../types/account';
 import AppDataSource from '../data-source';
 import { HashService } from './hash.service';
 import { BadRequestError, NotFoundError } from 'routing-controllers';
-import { UserError } from '../types/error';
+import { AccountError } from '../types/error';
 import { SearchDto } from '../dtos/account/search.dto';
 import { FindOptionsWhere, Like } from 'typeorm';
 import { PaginationService } from './pagination.service';
@@ -17,35 +17,36 @@ export class AccountService {
     private paginationService: PaginationService
   ) {}
 
-  async create(user: RegisterDto): Promise<void> {
-    const existedUser: User | null = await this.getUser(
-      user.email,
-      UserError.CreateUserFail
+  async create(account: RegisterDto): Promise<void> {
+    const existedAccount: Account | null = await this.getAccount(
+      account.email,
+      AccountError.CreateAccountFail
     );
 
-    if (existedUser) {
-      throw new BadRequestError(UserError.UserEmailExists);
+    if (existedAccount) {
+      throw new BadRequestError(AccountError.AccountEmailExists);
     }
 
-    const newUser = new User();
-    newUser.role = user.role || UserRole.User;
-    newUser.email = user.email;
-    newUser.name = user.name;
-    newUser.activated = false;
-    newUser.password = await this.hashService.hashString(user.password);
+    const newAccount = new Account();
+    newAccount.role = account.role || AccountRole.User;
+    newAccount.email = account.email;
+    newAccount.name = account.name;
+    newAccount.activated = false;
+    newAccount.password = await this.hashService.hashString(account.password);
 
-    await this.saveUser(newUser, UserError.CreateUserFail);
+    await this.saveAccount(newAccount, AccountError.CreateAccountFail);
   }
 
-  async getUsers(searchParams: SearchDto): Promise<IUser[]> {
-    const userRepository = AppDataSource.getRepository(User);
+  async getAccounts(searchParams: SearchDto): Promise<IAccount[]> {
+    const accountRepository = AppDataSource.getRepository(Account);
 
-    const sharedWhereOptions: FindOptionsWhere<User> = {};
+    const sharedWhereOptions: FindOptionsWhere<Account> = {};
     if (searchParams.role) {
       sharedWhereOptions.role = searchParams.role;
     }
 
-    let whereOptions: FindOptionsWhere<User> | FindOptionsWhere<User>[] = {};
+    let whereOptions: FindOptionsWhere<Account> | FindOptionsWhere<Account>[] =
+      {};
     if (!searchParams.searchTerm) {
       whereOptions = sharedWhereOptions;
     } else {
@@ -62,7 +63,7 @@ export class AccountService {
     }
 
     try {
-      return await userRepository.find({
+      return await accountRepository.find({
         ...this.paginationService.getPaginationParams(searchParams),
         where: whereOptions,
         select: {
@@ -74,78 +75,55 @@ export class AccountService {
         },
       });
     } catch {
-      throw new BadRequestError(UserError.GetUsersFail);
+      throw new BadRequestError(AccountError.GetAccountsFail);
     }
   }
 
-  async updateUser(userEmail: string, userFields: IUpdateUser): Promise<void> {
-    const user: User | null = await this.getUser(
-      userEmail,
-      UserError.ActivateUserFail
+  async updateAccount(
+    accountEmail: string,
+    accountFields: IUpdateAccount
+  ): Promise<void> {
+    const account: Account | null = await this.getAccount(
+      accountEmail,
+      AccountError.ActivateAccountFail
     );
 
-    if (!user) {
-      throw new NotFoundError(UserError.ActivateUserFail);
+    if (!account) {
+      throw new NotFoundError(AccountError.ActivateAccountFail);
     }
 
-    if (userFields.activated) user.activated = userFields.activated;
-    if (userFields.password) user.password = userFields.password;
-    if (userFields.name) user.name = userFields.name;
-    if (userFields.role) user.role = userFields.role;
-    if (userFields.email) user.email = userFields.email;
+    if (accountFields.activated) account.activated = accountFields.activated;
+    if (accountFields.password) account.password = accountFields.password;
+    if (accountFields.name) account.name = accountFields.name;
+    if (accountFields.role) account.role = accountFields.role;
+    if (accountFields.email) account.email = accountFields.email;
 
-    await this.saveUser(user, UserError.ActivateUserFail);
+    await this.saveAccount(account, AccountError.ActivateAccountFail);
   }
 
-  async activateUser(userEmail: string): Promise<void> {
-    const user: User | null = await this.getUser(
-      userEmail,
-      UserError.ActivateUserFail
-    );
-
-    if (!user) {
-      throw new NotFoundError(UserError.ActivateUserFail);
-    }
-
-    user.activated = true;
-
-    await this.saveUser(user, UserError.ActivateUserFail);
-  }
-
-  async setUserRole(userEmail: string, newRole: UserRole): Promise<void> {
-    const user: User | null = await this.getUser(
-      userEmail,
-      UserError.SetUserRoleFail
-    );
-
-    if (!user) {
-      throw new NotFoundError(UserError.SetUserRoleFail);
-    }
-
-    if (user.role === newRole) return;
-
-    user.role = newRole;
-
-    await this.saveUser(user, UserError.SetUserRoleFail);
-  }
-
-  private async getUser(email: string, errorMessage: UserError): Promise<User> {
+  private async getAccount(
+    email: string,
+    errorMessage: AccountError
+  ): Promise<Account> {
     if (!email) {
       throw new BadRequestError(errorMessage);
     }
 
     try {
-      const userRepository = AppDataSource.getRepository(User);
-      return await userRepository.findOneBy({ email });
+      const accountRepository = AppDataSource.getRepository(Account);
+      return await accountRepository.findOneBy({ email });
     } catch {
       throw new BadRequestError(errorMessage);
     }
   }
 
-  private async saveUser(user: User, errorMessage: UserError): Promise<void> {
+  private async saveAccount(
+    account: Account,
+    errorMessage: AccountError
+  ): Promise<void> {
     try {
-      const userRepository = AppDataSource.getRepository(User);
-      await userRepository.save(user);
+      const accountRepository = AppDataSource.getRepository(Account);
+      await accountRepository.save(account);
     } catch {
       throw new BadRequestError(errorMessage);
     }

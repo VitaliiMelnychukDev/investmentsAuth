@@ -1,6 +1,6 @@
-import { AuthMessage, UserMessage } from './message';
+import { AuthMessage, AccountMessage } from './message';
 
-type Message = UserMessage | AuthMessage;
+type Message = AccountMessage | AuthMessage;
 
 export interface IResponseNoData {
   success?: boolean;

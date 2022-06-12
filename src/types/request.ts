@@ -1,7 +1,7 @@
 import { ITokenPayload } from './token';
 
-export class AuthorizedRequest {
-  user: ITokenPayload;
+export interface AuthorizedRequest {
+  account: ITokenPayload;
 }
 
 export const enum Header {

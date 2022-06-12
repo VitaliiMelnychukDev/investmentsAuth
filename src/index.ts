@@ -19,24 +19,28 @@ useContainer(Container);
 
 const index = createExpressServer({
   controllers: [AccountController, AuthController],
-  authorizationChecker: async (action: Action, userRoles: string[]) => {
+  authorizationChecker: async (action: Action, accountRoles: string[]) => {
     const token = action.request.headers[Header.Authorization];
 
     if (!token) {
       throw new UnauthorizedError();
     }
 
-    const user: ITokenPayload = new TokenService().verifyAndGetAccessTokenData(
-      TokenHelper.parseToken(token)
-    );
+    const account: ITokenPayload =
+      new TokenService().verifyAndGetAccessTokenData(
+        TokenHelper.parseToken(token)
+      );
 
-    if (!user) {
+    if (!account) {
       throw new UnauthorizedError();
     }
 
-    action.request.user = user;
+    action.request.account = account;
 
-    if (!userRoles.length || (userRoles && userRoles.includes(user.role)))
+    if (
+      !accountRoles.length ||
+      (accountRoles && accountRoles.includes(account.role))
+    )
       return true;
 
     throw new ForbiddenError();

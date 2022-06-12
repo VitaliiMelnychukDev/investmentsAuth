@@ -12,7 +12,7 @@ import { IResponse, IResponseNoData } from '../types/general';
 import { LoginDto } from '../dtos/auth/login.dto';
 import { AuthService } from '../services/auth.service';
 import { ITokens } from '../types/token';
-import { AuthMessage, UserMessage } from '../types/message';
+import { AuthMessage, AccountMessage } from '../types/message';
 import { ValidateDto } from '../dtos/auth/validate.dto';
 import { IValidate } from '../types/auth';
 import { TokenService } from '../services/token.service';
@@ -35,7 +35,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: UserMessage.UserSuccessfullyRegistered,
+      message: AccountMessage.AccountSuccessfullyRegistered,
     };
   }
 
@@ -89,11 +89,11 @@ export class AuthController {
     @Body({ required: true }) logoutBody: RefreshDto,
     @Req() request: AuthorizedRequest
   ): Promise<IResponseNoData> {
-    await this.authService.logout(logoutBody.refreshToken, request.user);
+    await this.authService.logout(logoutBody.refreshToken, request.account);
 
     return {
       success: true,
-      message: AuthMessage.UserSuccessfullyLogout,
+      message: AuthMessage.AccountSuccessfullyLoggedOut,
     };
   }
 }

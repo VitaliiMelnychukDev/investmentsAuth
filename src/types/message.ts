@@ -1,9 +1,9 @@
-export const enum UserMessage {
-  UserSuccessfullyRegistered = 'UserSuccessfullyRegistered',
-  UserSuccessfullyActivated = 'UserSuccessfullyActivated',
-  UserRoleSuccessfullyChanged = 'UserRoleSuccessfullyChanged',
+export const enum AccountMessage {
+  AccountSuccessfullyRegistered = 'AccountSuccessfullyRegistered',
+  AccountSuccessfullyActivated = 'AccountSuccessfullyActivated',
+  AccountRoleSuccessfullyChanged = 'AccountRoleSuccessfullyChanged',
 }
 
 export const enum AuthMessage {
-  UserSuccessfullyLogout = 'UserSuccessfullyLogout',
+  AccountSuccessfullyLoggedOut = 'AccountSuccessfullyLoggedOut',
 }

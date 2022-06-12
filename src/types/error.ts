@@ -1,14 +1,14 @@
-export enum UserError {
-  CreateUserFail = 'CreateUserFail',
-  UserEmailExists = 'UserEmailExists',
-  ActivateUserFail = 'ActivateUserFail',
-  SetUserRoleFail = 'SetUserRoleFail',
-  UserNotFound = 'UserNotFound',
-  GetUsersFail = 'GetUsersFail',
+export enum AccountError {
+  CreateAccountFail = 'CreateAccountFail',
+  AccountEmailExists = 'AccountEmailExists',
+  ActivateAccountFail = 'ActivateAccountFail',
+  SetAccountRoleFail = 'SetAccountRoleFail',
+  AccountNotFound = 'AccountNotFound',
+  GetAccountsFail = 'GetAccountsFail',
 }
 
 export enum AuthError {
-  LoginUserFail = 'LoginUserFail',
+  LoginAccountFail = 'LoginAccountFail',
   RefreshTokenFail = 'RefreshTokenFail',
   LogoutFail = 'LogoutFail',
 }
