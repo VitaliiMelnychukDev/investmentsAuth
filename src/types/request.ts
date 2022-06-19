@@ -1,6 +1,6 @@
 import { ITokenPayload } from './token';
 
-export interface AuthorizedRequest {
+export interface IAuthorizedRequest {
   account: ITokenPayload;
 }
 

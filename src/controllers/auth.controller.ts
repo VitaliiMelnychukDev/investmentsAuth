@@ -17,7 +17,7 @@ import { ValidateDto } from '../dtos/auth/validate.dto';
 import { IValidate } from '../types/auth';
 import { TokenService } from '../services/token.service';
 import { RefreshDto } from '../dtos/auth/refresh.dto';
-import { AuthorizedRequest } from '../types/request';
+import { IAuthorizedRequest } from '../types/request';
 
 @JsonController('/auth')
 @Service()
@@ -87,7 +87,7 @@ export class AuthController {
   @Authorized()
   async logout(
     @Body({ required: true }) logoutBody: RefreshDto,
-    @Req() request: AuthorizedRequest
+    @Req() request: IAuthorizedRequest
   ): Promise<IResponseNoData> {
     await this.authService.logout(logoutBody.refreshToken, request.account);
 

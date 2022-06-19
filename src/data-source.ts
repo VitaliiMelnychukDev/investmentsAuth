@@ -12,6 +12,7 @@ const AppDataSource = new DataSource({
   database: 'auth',
   entities: [Account, Token],
   migrations: [join(__dirname, '/migration/*.{ts,js}')],
+  synchronize: false,
 });
 
 AppDataSource.initialize()
