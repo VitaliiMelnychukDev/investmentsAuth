@@ -9,12 +9,14 @@ import { AccountError } from '../types/error';
 import { SearchDto } from '../dtos/account/search.dto';
 import { FindOptionsWhere, Like } from 'typeorm';
 import { PaginationService } from './pagination.service';
+import { AccountProducer } from '../producers/accountProducer';
 
 @Service()
 export class AccountService {
   constructor(
     private hashService: HashService,
-    private paginationService: PaginationService
+    private paginationService: PaginationService,
+    private accountProducer: AccountProducer
   ) {}
 
   async create(account: RegisterDto): Promise<void> {
@@ -122,8 +124,12 @@ export class AccountService {
     errorMessage: AccountError
   ): Promise<void> {
     try {
+      const newAccount = !account.id;
       const accountRepository = AppDataSource.getRepository(Account);
-      await accountRepository.save(account);
+      const savedAccount = await accountRepository.save(account);
+      if (newAccount) {
+        await this.accountProducer.userRegistered(savedAccount);
+      }
     } catch {
       throw new BadRequestError(errorMessage);
     }

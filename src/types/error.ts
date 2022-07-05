@@ -5,6 +5,7 @@ export enum AccountError {
   SetAccountRoleFail = 'SetAccountRoleFail',
   AccountNotFound = 'AccountNotFound',
   GetAccountsFail = 'GetAccountsFail',
+  SendAccountRegisteredEventFail = 'SendAccountRegisteredEventFail',
 }
 
 export enum AuthError {
